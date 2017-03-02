@@ -1,10 +1,8 @@
 import java.io.IOException;
 import java.util.List;
-
 import zemberek.morphology.ambiguity.Z3MarkovModelDisambiguator;
 import zemberek.morphology.analysis.tr.TurkishMorphology;
 import zemberek.morphology.analysis.tr.TurkishSentenceAnalyzer;
-
 public class Main {
 	
 	public static void main(String[] args) throws IOException{
@@ -14,12 +12,9 @@ public class Main {
                 morphology,
                 disambiguator
         );
-        
 		Stem stemmer = new Stem(sentenceAnalyzer);
 		
-		List<String> paragraphs = ReadFile.readTextFile();
-		
-		List<String> sentences = Tokenize.tokenizeParagraphs(paragraphs);
+		List<String> sentences = ReadFile.readTextFile();
 		
 		List<List<String>> words = Tokenize.tokenizeSentences(sentences);
 		

@@ -2,7 +2,7 @@ import zemberek.tokenizer.SentenceBoundaryDetector;
 import zemberek.tokenizer.SimpleSentenceBoundaryDetector;
 import zemberek.tokenizer.ZemberekLexer;
 import org.antlr.v4.runtime.Token;
-
+import turkish.Deasciifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -22,7 +22,7 @@ public class Tokenize {
 			Iterator<Token> tokenIterator = lexer.getTokenIterator(sentence);
 			while (tokenIterator.hasNext()) {
 				Token token = tokenIterator.next();
-				temp.add(token.getText());
+				temp.add(new Deasciifier(token.getText()).convertToTurkish());
 			}
 			tokens.add(new ArrayList<String>(temp));
 			temp.clear();
