@@ -7,11 +7,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * @author Fatih Barmanbay
+ * Tokenizes paragraphs and sentences.
+ */
 public class Tokenize {
 	
 	/**
-	 * @param sentences: List of sentences
-	 * @return A list of words
+	 * @param sentences List of sentences
+	 * @return A list of word
 	 * Tokenizes sentences into words. Each element of the list is a List of String.
 	 */
 	public static List<List<String>> tokenizeSentences(List<String> sentences) {

@@ -16,6 +16,7 @@
       </plugin>
     </plugins>
   </build>
+  
   <repositories>
   	<repository>
   		<id>ahmetaa-repo</id>
@@ -23,11 +24,26 @@
   		<url>https://raw.github.com/ahmetaa/maven-repo/master</url>
   	</repository>
   </repositories>
+  
   <dependencies>
   	<dependency>
   		<groupId>zemberek-nlp</groupId>
   		<artifactId>morphology</artifactId>
   		<version>0.10.0</version>
   	</dependency>
+  	
+  	<dependency>
+  		<groupId>zemberek-nlp</groupId>
+  		<artifactId>normalization</artifactId>
+  		<version>0.10.0</version>
+  	</dependency>
+  	
+  	<!--  Gson: Java to Json conversion -->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.8.0</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>
