@@ -10,12 +10,10 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException{
 		
-		//final String FILE_TO_READ_NEG = "./text-files/tr_polarity.neg";
-		//final String FILE_TO_WRITE_NEG = "./text-files/preped_file_neg.json";
-		final String FILE_TO_READ_POS = "./text-files/tr_polarity.pos";
-		//final String FILE_TO_WRITE_POS = "./text-files/preped_file_pos.json";
-		//final String TEST_FILE_READ = "./test-files/test_sentences.txt";
-		//final String TEST_FILE_WRITE = "./test-files/test_result.json"; //TODO: Not writing to this path. Find out why.
+		final String FILE_TO_READ_NEG = "./data/reviews.neg";
+		final String FILE_TO_WRITE_NEG = "./data/data_neg.json";
+		//final String FILE_TO_READ_POS = "./data/reviews.pos";
+		//final String FILE_TO_WRITE_POS = "./data/data_pos.json";
 		
 		TurkishMorphology morphology = TurkishMorphology.createWithDefaults();
 		Z3MarkovModelDisambiguator disambiguator = new Z3MarkovModelDisambiguator();
@@ -25,7 +23,7 @@ public class Main {
         );
 		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer(sentenceAnalyzer);
 		
-		List<String> sentences = FileOperations.readFile(FILE_TO_READ_POS);
+		List<String> sentences = FileOperations.readFile(FILE_TO_READ_NEG);
 		
 		List<List<String>> words = Tokenize.tokenizeSentences(sentences);
 		
@@ -33,7 +31,6 @@ public class Main {
 		for (List<String> line : words) {
 			prepedText.add(analyzer.sentenceAnalyzer(line));
 		}
-		
-		FileOperations.writeFile(prepedText, "result.json");
+		FileOperations.writeFile(prepedText, FILE_TO_WRITE_NEG);
 	}
 }
