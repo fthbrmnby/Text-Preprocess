@@ -26,7 +26,8 @@ public class Tokenize {
 			Iterator<Token> tokenIterator = lexer.getTokenIterator(sentence);
 			while (tokenIterator.hasNext()) {
 				Token token = tokenIterator.next();
-				temp.add(new Deasciifier(token.getText()).convertToTurkish());
+				String deasciifiedWord = new Deasciifier(token.getText()).convertToTurkish();
+				temp.add(deasciifiedWord);
 			}
 			tokens.add(new ArrayList<String>(temp));
 			temp.clear();

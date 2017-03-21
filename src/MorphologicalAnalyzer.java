@@ -35,16 +35,17 @@ public class MorphologicalAnalyzer {
 	public String sentenceAnalyzer(List<String> words) { //TODO: find a way to store data as JSON
 		List<JsonBuilder> wordsAndTags = new ArrayList<>();
 		String rawSentence = String.join(" ", words);
+		
 		SentenceAnalysis analysis = analyzer.analyze(rawSentence);
 		analyzer.disambiguate(analysis);
 		
 		for (SentenceAnalysis.Entry entry : analysis) {
             WordAnalysis wordAnalysis = entry.parses.get(0);
-            if (wordAnalysis.root == "UNK") {
+            if (wordAnalysis.getLemma() == "UNK") {
             	unknownWords.add(wordAnalysis.root);
             	unkCount++;
             }
-            String root = wordAnalysis.root;
+            String root = wordAnalysis.getLemma().toLowerCase();
             String posTag = wordAnalysis.dictionaryItem.primaryPos.toString();
             wordsAndTags.add(new JsonBuilder(root, posTag));
             //System.out.println(wordAnalysis.root+ ":" + wordAnalysis.dictionaryItem.primaryPos.toString());
@@ -70,7 +71,7 @@ public class MorphologicalAnalyzer {
 	/**
 	 * Prints all unique words tagged as UNK.
 	 */
-	public void uniqueUnknownWords() {
+	public void printUnknownWords() {
 		unknownWords.forEach(e -> System.out.println(e));
 	}
 }
