@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Set;
 
 import zemberek.normalization.SingleWordSpellChecker;
 
@@ -8,14 +9,18 @@ import zemberek.normalization.SingleWordSpellChecker;
  */
 public class WordCorrector {
 	private SingleWordSpellChecker spellChecker;
+	private Set<String> stopWords;
+	private Set<String> turkishWords;
 	
 	
 	/**
 	 * @param dictionary List of words to create dictionary with.
 	 */
-	public WordCorrector(List<String> dictionary) {
+	public WordCorrector(List<String> dictionary, Set<String> stopWords, Set<String> turkishWords) {
 		spellChecker = new SingleWordSpellChecker(2);
 		dictionary.forEach(e -> spellChecker.addWord(e));
+		this.stopWords = stopWords;
+		this.turkishWords = turkishWords;
 	}
 	
 	/**
@@ -28,4 +33,14 @@ public class WordCorrector {
 		if(result.size() == 0) return "UNK";
 		return result.get(0);
 	}
+	
+	public Boolean isStopWord(String word) {
+		return stopWords.contains(word);
+	}
+	
+	public Boolean isWord(String word) {
+		return turkishWords.contains(word);
+	}
+	
+	
 }
