@@ -18,7 +18,7 @@ public class Tokenize {
 	 * Tokenizes sentences into words. Each element of the list is a List of String.
 	 */
 	public static List<List<String>> tokenizeSentences(List<String> sentences) {
-		String wantedChars = "[^A-Za-zğüiışçö ]";
+		String unwantedChars = "[^A-Za-zğüiışçö ]";
 		List<List<String>> tokens = new ArrayList<>();
 		List<String> temp = new ArrayList<>();
 		ZemberekLexer lexer = new ZemberekLexer();
@@ -27,7 +27,7 @@ public class Tokenize {
 			Iterator<Token> tokenIterator = lexer.getTokenIterator(sentence);
 			while (tokenIterator.hasNext()) {
 				Token token = tokenIterator.next();
-				String word = token.getText().replaceAll(wantedChars, "").trim();
+				String word = token.getText().replaceAll(unwantedChars, "").trim();
 				String deasciifiedWord = new Deasciifier(word).convertToTurkish();
 				temp.add(deasciifiedWord);
 			}

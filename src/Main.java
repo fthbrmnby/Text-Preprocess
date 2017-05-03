@@ -8,13 +8,15 @@ import zemberek.morphology.analysis.tr.TurkishSentenceAnalyzer;
 
 public class Main {
 	
-	public static void main(String[] args) throws IOException{
+	public static void main(String[] args) throws IOException {
 		
 		//final String FILE_TO_READ_NEG = "./data/reviews.neg";
 		//final String FILE_TO_WRITE_NEG = "./data/data_neg.json";
 		final String FILE_TO_READ_POS = "./data/reviews.pos";
 		//final String FILE_TO_WRITE_POS = "./data/data_pos.json";
 		final String DICT_NEG = "./data/dict.neg";
+		final String STOP_WORDS = "./data/stop_words.txt";
+		final String TR_WORDS = "./data/turkish_words.txt";
 		
 		TurkishMorphology morphology = TurkishMorphology.createWithDefaults();
 		Z3MarkovModelDisambiguator disambiguator = new Z3MarkovModelDisambiguator();
@@ -22,7 +24,8 @@ public class Main {
                 morphology,
                 disambiguator
         );
-		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer(sentenceAnalyzer, DICT_NEG);
+		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer(sentenceAnalyzer,
+				DICT_NEG, STOP_WORDS, TR_WORDS);
 		
 		List<String> sentences = FileOperations.readFile(FILE_TO_READ_POS);
 		List<List<String>> words = Tokenize.tokenizeSentences(sentences);

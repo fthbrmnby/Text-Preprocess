@@ -1,5 +1,8 @@
 /home/fatih/eclipse-workspace/Preprocess/src/Tokenize.java
-/home/fatih/eclipse-workspace/Preprocess/src/Stem.java
+/home/fatih/eclipse-workspace/Preprocess/src/Translate.java
 /home/fatih/eclipse-workspace/Preprocess/src/Main.java
 /home/fatih/eclipse-workspace/Preprocess/src/FileOperations.java
 /home/fatih/eclipse-workspace/Preprocess/src/Test.java
+/home/fatih/eclipse-workspace/Preprocess/src/WordCorrector.java
+/home/fatih/eclipse-workspace/Preprocess/src/MorphologicalAnalyzer.java
+/home/fatih/eclipse-workspace/Preprocess/src/JsonBuilder.java
