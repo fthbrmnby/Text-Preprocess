@@ -51,74 +51,82 @@ public class MorphologicalAnalyzer {
 
 		for (SentenceAnalysis.Entry entry : analysis) {
 			WordAnalysis wordAnalysis = entry.parses.get(0);
-			// If the root is unknown try to correct the word.
-			if (wordAnalysis.getLemma() == "UNK") {
-				String unkWord = wordAnalysis.getSurfaceForm();
-				String correctWord = wordCorrector.correctWord(unkWord);
-				//System.out.println("Before Correction: " + unkWord + "\nAfter Correction: " + correctWord);
-				
-				SentenceAnalysis analyzeAgain = analyzer.analyze(correctWord);
-				analyzer.disambiguate(analyzeAgain);
-				WordAnalysis wa = analyzeAgain.getEntry(0).parses.get(0);
-				String root = wa.getLemma().toLowerCase();
-				// If root is still unknown, add it as UNK.
-				if (root == "UNK") {
-					String posTag = wa.dictionaryItem.primaryPos.toString();
-					wordsAndTags.add(new JsonBuilder(root, posTag));
-					unknownWords.add(wordAnalysis.root);
-					unkCount++;
-				// If word successfully corrected and it is not a stop word,
-				// then translate the root of the word and add it to JSON.
-				} else if (!wordCorrector.isStopWord(root)) {
-					// If the word is root, then do not try to take the root of it.
-					if (wordCorrector.isWord(correctWord)) {
-						String engRoot = GCTranslate.getTranslation(correctWord);
-						// Is there more than one word in translation? If there is,
-						// than take the all the words and add them to the JSON
-						if (engRoot.contains(" ")) {
-							String[] translations = engRoot.split(" ");
-							String posTag = wa.dictionaryItem.primaryPos.toString();
-							Arrays.asList(translations).forEach(e -> 
-							wordsAndTags.add(new JsonBuilder(e, posTag)));
-						} else {
-							String posTag = wa.dictionaryItem.primaryPos.toString();
-							wordsAndTags.add(new JsonBuilder(engRoot, posTag));
-						}
-						
+			String word = wordAnalysis.getSurfaceForm();
+			// Check if word is already in its root form
+			if(wordCorrector.isWord(wordAnalysis.getSurfaceForm())) {
+				// Check if the word is a stop word
+				if (!wordCorrector.isStopWord(word)){
+					String posTag = wordAnalysis.getPos().toString();
+					String engWord = GCTranslate.getTranslation(word);
+					// Check if the translation has more than one word
+					if (engWord.contains(" ")) {
+						List<String> engWords = Arrays.asList(engWord.split(" "));
+						engWords.forEach(e -> wordsAndTags.add(new JsonBuilder(e, posTag)));
 					} else {
-						String engRoot = GCTranslate.getTranslation(root);
-						String posTag = wa.dictionaryItem.primaryPos.toString();
-						wordsAndTags.add(new JsonBuilder(engRoot, posTag));
+						wordsAndTags.add(new JsonBuilder(engWord, posTag));
 					}
-					
-				} else {
-					continue;
 				}
-			// If the word is correctly spelled, just take the root and POSTAG
-			// and add it the JSON.
+			// Word is not in its root form. Do stemming.	
 			} else {
-				String orgWord = wordAnalysis.getSurfaceForm().toLowerCase();
-				String root = wordAnalysis.getLemma().toLowerCase();
-				if (!wordCorrector.isStopWord(root)) {
-					if (wordCorrector.isWord(orgWord)) {
-						String engRoot = GCTranslate.getTranslation(orgWord);
-						if (engRoot.contains(" ")) {
-							String[] translations = engRoot.split(" ");
-							String posTag = wordAnalysis.dictionaryItem.primaryPos.toString();
-							Arrays.asList(translations).forEach(e -> 
-							wordsAndTags.add(new JsonBuilder(e, posTag)));
+				if (wordAnalysis.getLemma() == "UNK") {
+					String unkWord = wordAnalysis.getSurfaceForm();
+					String correctWord = wordCorrector.correctWord(unkWord);
+					//System.out.println("Before Correction: " + unkWord + "\nAfter Correction: " + correctWord);
+					
+					SentenceAnalysis analyzeAgain = analyzer.analyze(correctWord);
+					analyzer.disambiguate(analyzeAgain);
+					WordAnalysis wa = analyzeAgain.getEntry(0).parses.get(0);
+					String root = wa.getLemma().toLowerCase();
+					// If root is still unknown, add it as UNK.
+					if (root == "UNK") {
+						String posTag = wa.dictionaryItem.primaryPos.toString();
+						wordsAndTags.add(new JsonBuilder(root, posTag));
+						unknownWords.add(wordAnalysis.root);
+						unkCount++;
+					// If word successfully corrected and it is not a stop word,
+					// then translate the root of the word and add it to JSON.
+					} else if (!wordCorrector.isStopWord(root)) {
+						// If the word is root, then do not try to take the root of it.
+						if (wordCorrector.isWord(correctWord)) {
+							String engRoot = GCTranslate.getTranslation(correctWord);
+							// Is there more than one word in translation? If there is,
+							// than take the all the words and add them to the JSON
+							if (engRoot.contains(" ")) {
+								String[] translations = engRoot.split(" ");
+								String posTag = wa.dictionaryItem.primaryPos.toString();
+								Arrays.asList(translations).forEach(e -> 
+								wordsAndTags.add(new JsonBuilder(e, posTag)));
+							} else {
+								String posTag = wa.dictionaryItem.primaryPos.toString();
+								wordsAndTags.add(new JsonBuilder(engRoot, posTag));
+							}
+							
 						} else {
-							String posTag = wordAnalysis.dictionaryItem.primaryPos.toString();
+							String engRoot = GCTranslate.getTranslation(root);
+							String posTag = wa.dictionaryItem.primaryPos.toString();
 							wordsAndTags.add(new JsonBuilder(engRoot, posTag));
 						}
 						
 					} else {
-						String engRoot = GCTranslate.getTranslation(root);
-						String posTag = wordAnalysis.dictionaryItem.primaryPos.toString();
-						wordsAndTags.add(new JsonBuilder(engRoot, posTag));
+						continue;
 					}
+				// If the word is correctly spelled, just take the root and POSTAG
+				// and add it the JSON.
 				} else {
-					continue;
+					String root = wordAnalysis.getLemma().toLowerCase();
+					if (!wordCorrector.isStopWord(root)) {
+							String engRoot = GCTranslate.getTranslation(root);
+							String posTag = wordAnalysis.dictionaryItem.primaryPos.toString();
+							// Check if translation has more than one word
+							if (engRoot.contains(" ")) {
+								List<String> engWords = Arrays.asList(engRoot.split(" "));
+								engWords.forEach(e -> wordsAndTags.add(new JsonBuilder(e, posTag)));
+							} else {
+								wordsAndTags.add(new JsonBuilder(engRoot, posTag));
+							}
+					} else {
+						continue;
+					}
 				}
 			}
 		}
