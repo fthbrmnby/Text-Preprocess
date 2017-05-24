@@ -4,6 +4,7 @@ import zemberek.morphology.analysis.tr.TurkishSentenceAnalyzer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -18,6 +19,7 @@ public class MorphologicalAnalyzer {
 	private int unkCount;
 	private Set<String> unknownWords;
 	private WordCorrector wordCorrector;
+	private HashMap<String, String> engDict;
 
 	/**
 	 * @param analyzer
@@ -30,6 +32,7 @@ public class MorphologicalAnalyzer {
 			String stopWords,
 			String turkishWords) {
 		this.analyzer = analyzer;
+		engDict = TranslateWords.getMap();
 		unkCount = 0;
 		unknownWords = new TreeSet<>();
 		wordCorrector = new WordCorrector(FileOperations.readFile(dictionary),
@@ -57,7 +60,7 @@ public class MorphologicalAnalyzer {
 				// Check if the word is a stop word
 				if (!wordCorrector.isStopWord(word)){
 					String posTag = wordAnalysis.getPos().toString();
-					String engWord = GCTranslate.getTranslation(word);
+					String engWord = engDict.get(word);
 					// Check if the translation has more than one word
 					if (engWord.contains(" ")) {
 						List<String> engWords = Arrays.asList(engWord.split(" "));
@@ -88,7 +91,7 @@ public class MorphologicalAnalyzer {
 					} else if (!wordCorrector.isStopWord(root)) {
 						// If the word is root, then do not try to take the root of it.
 						if (wordCorrector.isWord(correctWord)) {
-							String engRoot = GCTranslate.getTranslation(correctWord);
+							String engRoot = engDict.get(correctWord);
 							// Is there more than one word in translation? If there is,
 							// than take the all the words and add them to the JSON
 							if (engRoot.contains(" ")) {
@@ -102,7 +105,7 @@ public class MorphologicalAnalyzer {
 							}
 							
 						} else {
-							String engRoot = GCTranslate.getTranslation(root);
+							String engRoot = engDict.get(root);
 							String posTag = wa.dictionaryItem.primaryPos.toString();
 							wordsAndTags.add(new JsonBuilder(engRoot, posTag));
 						}
@@ -115,7 +118,7 @@ public class MorphologicalAnalyzer {
 				} else {
 					String root = wordAnalysis.getLemma().toLowerCase();
 					if (!wordCorrector.isStopWord(root)) {
-							String engRoot = GCTranslate.getTranslation(root);
+							String engRoot = engDict.get(root);
 							String posTag = wordAnalysis.dictionaryItem.primaryPos.toString();
 							// Check if translation has more than one word
 							if (engRoot.contains(" ")) {
@@ -132,7 +135,7 @@ public class MorphologicalAnalyzer {
 		}
 		return JsonBuilder.toJson(wordsAndTags);
 	}
-
+	
 	/**
 	 * @return number of UNK tag in data set.
 	 */
@@ -152,5 +155,63 @@ public class MorphologicalAnalyzer {
 	 */
 	public void printUnknownWords() {
 		unknownWords.forEach(e -> System.out.println(e));
+	}
+	
+	public String rootOfWords(List<String> words){
+		String rawSentence = String.join(" ", words);
+		
+		SentenceAnalysis analysis = analyzer.analyze(rawSentence);
+		analyzer.disambiguate(analysis);
+
+		String rootSentence = "";
+		for (SentenceAnalysis.Entry entry : analysis) {
+			WordAnalysis wordAnalysis = entry.parses.get(0);
+			String word = wordAnalysis.getSurfaceForm();
+			// Check if word is already in its root form
+			if(wordCorrector.isWord(wordAnalysis.getSurfaceForm())) {
+				// Check if the word is a stop word
+				if (!wordCorrector.isStopWord(word)){
+					rootSentence = rootSentence.concat(word+" ");
+				}
+			// Word is not in its root form. Do stemming.	
+			} else {
+				if (wordAnalysis.getLemma() == "UNK") {
+					String unkWord = wordAnalysis.getSurfaceForm();
+					String correctWord = wordCorrector.correctWord(unkWord);
+					//System.out.println("Before Correction: " + unkWord + "\nAfter Correction: " + correctWord);
+					
+					SentenceAnalysis analyzeAgain = analyzer.analyze(correctWord);
+					analyzer.disambiguate(analyzeAgain);
+					WordAnalysis wa = analyzeAgain.getEntry(0).parses.get(0);
+					String root = wa.getLemma().toLowerCase();
+					// If root is still unknown, add it as UNK.
+					if (root == "UNK") {
+						rootSentence = rootSentence.concat(wa.getSurfaceForm()+" ");
+					// If word successfully corrected and it is not a stop word,
+					// then translate the root of the word and add it to JSON.
+					} else if (!wordCorrector.isStopWord(root)) {
+						// If the word is root, then do not try to take the root of it.
+						if (wordCorrector.isWord(correctWord)) {
+							rawSentence.concat(correctWord+" ");
+						} else {
+							rootSentence = rootSentence.concat(root+" ");
+						}
+						
+					} else {
+						continue;
+					}
+				// If the word is correctly spelled, just take the root and POSTAG
+				// and add it the JSON.
+				} else {
+					String root = wordAnalysis.getLemma().toLowerCase();
+					if (!wordCorrector.isStopWord(root)) {
+						rootSentence = rootSentence.concat(root+" ");
+					} else {
+						continue;
+					}
+				}
+			}
+		}
+		return rootSentence;
 	}
 }
