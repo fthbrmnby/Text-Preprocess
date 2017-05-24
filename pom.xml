@@ -46,13 +46,5 @@
       <scope>compile</scope>
     </dependency>
     <!--  Gson: Java to Json conversion -->
-	
-	<!-- GCP Translate API -->
-	<dependency>
-    	<groupId>com.google.cloud</groupId>
-    	<artifactId>google-cloud-translate</artifactId>
-    	<version>0.17.1-beta</version>
-	</dependency>
-	<!-- GCP Translate API -->
   </dependencies>
 </project>

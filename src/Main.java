@@ -10,13 +10,12 @@ public class Main {
 	
 	public static void main(String[] args) throws IOException {
 		
-		//final String FILE_TO_READ_NEG = "./data/reviews.neg";
-		//final String FILE_TO_WRITE_NEG = "./data/data_neg.json";
-		final String FILE_TO_READ_POS = "./data/reviews.pos";
-		//final String FILE_TO_WRITE_POS = "./data/data_pos.json";
-		final String DICT_NEG = "./data/dict.neg";
-		final String STOP_WORDS = "./data/stop_words.txt";
-		final String TR_WORDS = "./data/turkish_words.txt";
+		final String FILE_TO_READ_NEG = "data/reviews.neg";
+		final String FILE_TO_READ_POS = "data/reviews.pos";
+		final String DICT_NEG = "data/dict.neg";
+		final String DICT_POS = "data/dict.pos";
+		final String STOP_WORDS = "data/stop_words.txt";
+		final String TR_WORDS = "data/turkish_words.txt";
 		
 		TurkishMorphology morphology = TurkishMorphology.createWithDefaults();
 		Z3MarkovModelDisambiguator disambiguator = new Z3MarkovModelDisambiguator();
@@ -25,7 +24,7 @@ public class Main {
                 disambiguator
         );
 		MorphologicalAnalyzer analyzer = new MorphologicalAnalyzer(sentenceAnalyzer,
-				DICT_NEG, STOP_WORDS, TR_WORDS);
+				DICT_POS, STOP_WORDS, TR_WORDS);
 		
 		List<String> sentences = FileOperations.readFile(FILE_TO_READ_POS);
 		List<List<String>> words = Tokenize.tokenizeSentences(sentences);
@@ -34,9 +33,9 @@ public class Main {
 		for (List<String> line : words) {
 			prepedText.add(analyzer.sentenceAnalyzer(line));
 		}
-		System.out.println("Number of unknown words: " + analyzer.uniqueUnknownCount());
-		System.out.println("Unknown words are: \n");
+//		System.out.println("Number of unknown words: " + analyzer.uniqueUnknownCount());
+//		System.out.println("Unknown words are: \n");
 		analyzer.printUnknownWords();
-		//FileOperations.writeFile(prepedText, "/home/fatih/Desktop/prep.json");
+		FileOperations.writeFile(prepedText, "/home/fatih/Desktop/prep-pos.json");
 	}
 }
