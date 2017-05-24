@@ -42,12 +42,10 @@ public class Tokenize {
 	 * @return: A list of sentences
 	 * Tokenizes paragraphs into sentences.
 	 */
-	public static List<String> tokenizeParagraphs(List<String> paragraphs) {
+	public static List<String> tokenizeParagraphs(String paragraphs) {
 		SentenceBoundaryDetector detector = new SimpleSentenceBoundaryDetector();
 		List<String> sentences = new ArrayList<>();
-		for (String paragraph : paragraphs) {
-			detector.getSentences(paragraph).forEach(e -> sentences.add(e));;
-		}
+		detector.getSentences(paragraphs).forEach(e -> sentences.add(e));;
 		return sentences;
 	}
 }
