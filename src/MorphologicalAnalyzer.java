@@ -94,7 +94,7 @@ public class MorphologicalAnalyzer {
 							String engRoot = engDict.get(correctWord);
 							// Is there more than one word in translation? If there is,
 							// than take the all the words and add them to the JSON
-							if (engRoot.contains(" ")) {
+							if (engRoot != null && engRoot.contains(" ")) {
 								String[] translations = engRoot.split(" ");
 								String posTag = wa.dictionaryItem.primaryPos.toString();
 								Arrays.asList(translations).forEach(e -> 
@@ -121,7 +121,7 @@ public class MorphologicalAnalyzer {
 							String engRoot = engDict.get(root);
 							String posTag = wordAnalysis.dictionaryItem.primaryPos.toString();
 							// Check if translation has more than one word
-							if (engRoot.contains(" ")) {
+							if (engRoot != null && engRoot.contains(" ")) {
 								List<String> engWords = Arrays.asList(engRoot.split(" "));
 								engWords.forEach(e -> wordsAndTags.add(new JsonBuilder(e, posTag)));
 							} else {
